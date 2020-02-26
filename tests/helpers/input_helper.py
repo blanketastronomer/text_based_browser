@@ -1,5 +1,7 @@
 from io import StringIO
 
+SYS_STDIN = 'sys.stdin'
+
 
 def compatible_input(*inputs) -> StringIO:
     """

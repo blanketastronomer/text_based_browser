@@ -16,7 +16,7 @@ class AddressBar:
         underscore = '_'
 
         if address == 'exit':
-            exit(42)
+            exit(0)
 
         if dot in address:
             address = address.replace(dot, underscore)
@@ -34,8 +34,11 @@ class AddressBar:
         """
 
         try:
-            url = self.convert_address(address)
-            response = globals()[url]
+            if not self.validate(address) and "_" in address:
+                response = globals()[address]
+            else:
+                url = self.convert_address(address)
+                response = globals()[url]
         except KeyError:
             response = 'Error 404 Not Found'
         except BadRequestError:

@@ -1,10 +1,8 @@
 import pytest
 
 from tests.fixtures.address_fixture import nytimes_com, bloomberg_com
-from tests.helpers.input_helper import compatible_input
+from tests.helpers.input_helper import compatible_input, SYS_STDIN
 from text_based_browser.address_bar import AddressBar
-
-SYS_STDIN = 'sys.stdin'
 
 
 @pytest.fixture()
@@ -33,7 +31,7 @@ def test_address_bar_processes_exit_command(monkeypatch, address_bar):
         address_bar.convert_address(input())
 
     assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == 42
+    assert pytest_wrapped_e.value.code == 0
 
 
 def test_address_bar_loads_page(monkeypatch, address_bar):
