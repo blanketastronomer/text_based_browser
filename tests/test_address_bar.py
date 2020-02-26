@@ -50,4 +50,12 @@ def test_address_bar_shows_404_error_if_address_not_found(monkeypatch, address_b
 
     monkeypatch.setattr(SYS_STDIN, current_input)
 
-    assert address_bar.go(input()) == '404 Not Found'
+    assert address_bar.go(input()) == 'Error 404 Not Found'
+
+
+def test_address_bar_shows_400_if_invalid_url(monkeypatch, address_bar):
+    current_input = compatible_input('nytimes^org')
+
+    monkeypatch.setattr(SYS_STDIN, current_input)
+
+    assert address_bar.go(input()) == 'Error 400 Bad Request'

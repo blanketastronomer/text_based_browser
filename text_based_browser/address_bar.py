@@ -1,5 +1,8 @@
 from tests.fixtures.address_fixture import *
 
+class BadRequestError(ValueError):
+    pass
+
 
 class AddressBar:
     def convert_address(self, address: str) -> str:
@@ -17,6 +20,8 @@ class AddressBar:
 
         if dot in address:
             address = address.replace(dot, underscore)
+        else:
+            raise BadRequestError
 
         return address
 
@@ -27,11 +32,23 @@ class AddressBar:
         :param address: Address to go to
         :return: Page content
         """
-        url = self.convert_address(address)
 
         try:
+            url = self.convert_address(address)
             response = globals()[url]
         except KeyError:
-            response = '404 Not Found'
+            response = 'Error 404 Not Found'
+        except BadRequestError:
+            response = 'Error 400 Bad Request'
 
         return response
+
+    def validate(self, url: str) -> bool:
+        """
+        Validate a URL.
+
+        Right now this means checking if the URL has at least one dot in it.
+        :param url: URL to check
+        :return: True if valid, else False
+        """
+        return '.' in url
