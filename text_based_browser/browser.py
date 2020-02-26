@@ -18,9 +18,8 @@ class Browser(object):
         :return:
         """
         while self.url != self.exit_command:
-            self.url = self.address_bar.convert_address(input())
+            self.url = self.address_bar.convert_address(input('> '))
 
-            # print(self.url)
             self.render_page(self.url)
 
             self.url = ''

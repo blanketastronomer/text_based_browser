@@ -1,5 +1,6 @@
 from tests.fixtures.address_fixture import *
 
+
 class AddressBar:
     def convert_address(self, address: str) -> str:
         """
@@ -28,4 +29,9 @@ class AddressBar:
         """
         url = self.convert_address(address)
 
-        return globals()[url]
+        try:
+            response = globals()[url]
+        except KeyError:
+            response = '404 Not Found'
+
+        return response

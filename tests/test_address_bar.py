@@ -43,3 +43,11 @@ def test_address_bar_loads_page(monkeypatch, address_bar):
 
     assert address_bar.go(input()) == nytimes_com
     assert address_bar.go(input()) == bloomberg_com
+
+
+def test_address_bar_shows_404_error_if_address_not_found(monkeypatch, address_bar):
+    current_input = compatible_input('nytimes.org')
+
+    monkeypatch.setattr(SYS_STDIN, current_input)
+
+    assert address_bar.go(input()) == '404 Not Found'
