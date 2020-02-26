@@ -27,6 +27,7 @@ class Browser(object):
         # Check if a tab directory has been passed to the program as an argument
         self.arguments = self.argument_parser.parse_args(args)
         tab_directory = self.arguments.tab_directory
+        self.tab_directory = tab_directory
 
         if tab_directory is not None:
             Path(tab_directory).mkdir(exist_ok=True)
@@ -48,7 +49,32 @@ class Browser(object):
         :param url: URL of the page to render
         :return: Page content
         """
-        print(self.address_bar.go(url))
+        page_content = self.address_bar.go(url)
+        print(page_content)
+
+        if self.tab_directory is not None:
+            self.save_page(url, page_content)
+
+    def save_page(self, url: str, page_content: str):
+        """
+        Saves a page as a tab.
+
+        :param url: URL of the page to save
+        :param page_content: Page content to save
+        :return: Nothing
+        """
+        components = url.split('_')
+        filename = url.split('_')[:len(components) - 1]
+        filename = '.'.join(filename)
+        filename = f"{filename}.browsertab"
+
+        save_file = Path(self.tab_directory) / filename
+
+        if not save_file.is_absolute():
+            save_file = Path.cwd() / save_file
+
+        with open(save_file, 'w') as f:
+            f.write(page_content)
 
     def quit(self, error_code: int = 0):
         """
