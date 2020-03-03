@@ -1,5 +1,6 @@
 import pytest
 
+from tests.fixtures.address_fixture import nytimes_com, bloomberg_com
 from tests.helpers.input_helper import pytest_add_input
 from text_based_browser.browser import Browser
 from text_based_browser.resolver import Resolver
@@ -31,3 +32,10 @@ def test_resolver_returns_400_if_invalid_url(monkeypatch, resolver):
     assert resolver.load_page(input()) == ERROR_400
     assert resolver.load_page(input()) == ERROR_400
     assert resolver.load_page(input()) == ERROR_400
+
+
+def test_resolver_loads_offline_page(monkeypatch, resolver):
+    pytest_add_input(monkeypatch, 'nytimes.com', 'bloomberg.com')
+
+    assert resolver.load_page(input()) == nytimes_com
+    assert resolver.load_page(input()) == bloomberg_com

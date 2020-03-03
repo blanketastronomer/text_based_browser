@@ -2,6 +2,7 @@ import re
 from typing import List
 from urllib.parse import urlparse, urlunparse
 
+from tests.fixtures.address_fixture import *
 from text_based_browser.browser import Browser
 
 ERROR_BAD_REQUEST = "Error 400 Bad Request"
@@ -56,7 +57,14 @@ class Resolver:
         response = ''
 
         if self.valid_hostname(url):
-            pass
+            url_to_load, status = self.url_to_variable(url)
+            response = ''
+
+            try:
+                if status == 'offline':
+                    response = globals()[url_to_load]
+            except KeyError:
+                response = ERROR_PAGE_NOT_FOUND
         else:
             response = ERROR_BAD_REQUEST
 
