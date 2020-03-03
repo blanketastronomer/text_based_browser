@@ -5,6 +5,9 @@ from text_based_browser.browser import Browser
 from text_based_browser.resolver import Resolver
 
 
+ERROR_400 = "Error 400 Bad Request"
+
+
 @pytest.fixture()
 def resolver():
     browser = Browser()
@@ -20,3 +23,11 @@ def test_resolver_converts_addresses(monkeypatch, resolver):
 
     for variable in expected:
         assert resolver.url_to_variable(input()) == [variable, 'offline']
+
+
+def test_resolver_returns_400_if_invalid_url(monkeypatch, resolver):
+    pytest_add_input(monkeypatch, 'nytimes com', '-bloomberg.com', 'yahoo.com-')
+
+    assert resolver.load_page(input()) == ERROR_400
+    assert resolver.load_page(input()) == ERROR_400
+    assert resolver.load_page(input()) == ERROR_400

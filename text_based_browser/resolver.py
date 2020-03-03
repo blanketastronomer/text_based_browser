@@ -1,7 +1,11 @@
+import re
 from typing import List
 from urllib.parse import urlparse, urlunparse
 
 from text_based_browser.browser import Browser
+
+ERROR_BAD_REQUEST = "Error 400 Bad Request"
+ERROR_PAGE_NOT_FOUND = "Error 404 Page Not Found"
 
 
 class Resolver:
@@ -39,3 +43,37 @@ class Resolver:
         :return: Variable name
         """
         return url.replace('.', '_')
+
+    def load_page(self, url: str) -> str:
+        """
+        Load a webpage found at the given URL.
+
+        NOTE: At the moment, this DOES NOT actually call out to the Internet.
+
+        :param url: URL of the webpage to load.
+        :return:
+        """
+        response = ''
+
+        if self.valid_hostname(url):
+            pass
+        else:
+            response = ERROR_BAD_REQUEST
+
+        return response
+
+    def valid_hostname(self, hostname: str) -> bool:
+        """
+        Check if the given hostname is valid under RFC 1123.
+
+        :param hostname: Hostname to validate
+        :return: True if valid, else False
+        """
+        invalid_pattern = re.compile(r"-*[^a-zA-Z\.]+-*", re.IGNORECASE)
+
+        searched = invalid_pattern.search(hostname)
+
+        if searched:
+            return False
+        else:
+            return True
