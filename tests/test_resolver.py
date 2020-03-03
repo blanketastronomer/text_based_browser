@@ -7,6 +7,7 @@ from text_based_browser.resolver import Resolver
 
 
 ERROR_400 = "Error 400 Bad Request"
+ERROR_404 = "Error 404 Page Not Found"
 
 
 @pytest.fixture()
@@ -39,3 +40,9 @@ def test_resolver_loads_offline_page(monkeypatch, resolver):
 
     assert resolver.load_page(input()) == nytimes_com
     assert resolver.load_page(input()) == bloomberg_com
+
+
+def test_resolver_returns_404_if_offline_page_not_found(monkeypatch, resolver):
+    pytest_add_input(monkeypatch, 'yahoo.com')
+
+    assert resolver.load_page(input()) == ERROR_404
