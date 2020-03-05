@@ -47,3 +47,13 @@ def test_browser_creates_tab_directory(monkeypatch, browser_with_absolute_tab_di
         browser_with_absolute_tab_directory.start()
 
     assert TAB_DIRECTORY.exists() is True
+
+
+def test_browser_does_not_create_directory_if_none_provided(monkeypatch):
+    pytest_add_input(monkeypatch, 'exit')
+    browser = Browser()
+
+    with pytest.raises(SystemExit):
+        browser.start()
+
+    assert TAB_DIRECTORY.exists() is False
