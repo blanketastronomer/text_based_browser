@@ -57,3 +57,36 @@ def test_browser_does_not_create_directory_if_none_provided(monkeypatch):
         browser.start()
 
     assert TAB_DIRECTORY.exists() is False
+
+
+def test_tab_not_saved_if_url_is_invalid(monkeypatch, browser_with_absolute_tab_directory):
+    pytest_add_input(monkeypatch, '-nytimes.com', 'exit')
+
+    with pytest.raises(SystemExit):
+        browser_with_absolute_tab_directory.start()
+
+    file = TAB_DIRECTORY / 'nytimes.browsertab'
+
+    assert file.exists() is False
+
+
+def test_tab_saved_if_url_valid(monkeypatch, browser_with_absolute_tab_directory):
+    pytest_add_input(monkeypatch, 'nytimes.com', 'exit')
+
+    with pytest.raises(SystemExit):
+        browser_with_absolute_tab_directory.start()
+
+    file = TAB_DIRECTORY / 'nytimes.browsertab'
+
+    assert file.exists() is True
+
+
+def test_tab_saved_if_url_has_multiple_dots_in_hostname(monkeypatch, browser_with_absolute_tab_directory):
+    pytest_add_input(monkeypatch, 'en.wikipedia.org', 'exit')
+
+    with pytest.raises(SystemExit):
+        browser_with_absolute_tab_directory.start()
+
+    file = TAB_DIRECTORY / 'en.wikipedia.browsertab'
+
+    assert file.exists() is True

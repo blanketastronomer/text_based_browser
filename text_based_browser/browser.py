@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from text_based_browser.argument_parser import ArgumentParser
 
@@ -50,6 +50,8 @@ class Browser(object):
 
                 print(page_content)
 
+                self.save_page(self.url, page_content)
+
             self.url = ''
 
     def load_page(self, url: str) -> str:
@@ -61,6 +63,22 @@ class Browser(object):
         """
         return self.resolver.load_page(url)
 
+    def save_page(self, url: str, page_content: str):
+        """
+        Save a page with the given URL and content to the tab directory if it exists.
+
+        :param url: Page URL
+        :param page_content: Page content
+        :return: None
+        """
+        save_file = self.get_tab_file_path(self.url)
+
+        try:
+            with open(save_file, 'w') as f:
+                f.write(page_content)
+        except TypeError:
+            pass
+
     def quit(self, error_code: int = 0):
         """
         Quit the browser with the given error code.
@@ -69,3 +87,34 @@ class Browser(object):
         :return: Error code
         """
         exit(error_code)
+
+    def get_tab_file_path(self, url: str) -> Union[str, None]:
+        """
+        Get the path to the tab file for the given URL.
+
+        If the file doesn't exist, it'll return None.
+
+        :param url: URL to derive the file path
+        :return: Path as a string if it exists, else None
+        """
+        parts = url.split('.')
+        extension = 'browsertab'
+
+        try:
+            # self.tab_directory exists
+            if len(parts) > 1:
+                # Multiple parts, such as "en.wikipedia.org"
+                split = parts[:len(parts) - 1]
+            else:
+                # Single part, such as "reddit.com"
+                split = parts
+
+            split.append(extension)
+
+            filename = '.'.join(split)
+
+            save_file = Path(self.tab_directory) / filename
+
+            return save_file
+        except TypeError:
+            pass
