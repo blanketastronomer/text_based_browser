@@ -19,6 +19,17 @@ class Browser(object):
         self.url = ''
         self.exit_command = 'exit'
 
+        self.process_arguments()
+
+    def process_arguments(self):
+        """
+        Process arguments passed to the class instance.
+
+        :return: None
+        """
+        self.arguments = self.argument_parser.parse_args(self._args)
+        self.tab_directory = self.arguments.tab_directory
+
     def start(self):
         """
         Start the browser.
@@ -26,6 +37,10 @@ class Browser(object):
         This should run an infinite loop until the browser is quit.
         :return:
         """
+
+        if self.tab_directory is not None:
+            Path(self.tab_directory).mkdir(exist_ok=True, parents=True)
+
         while True:
             self.url = input('> ')
             if self.url == self.exit_command:
