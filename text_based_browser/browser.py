@@ -9,9 +9,12 @@ class Browser(object):
         """
         A new Browser object.
         """
+        from text_based_browser.resolver import Resolver
+
         self.argument_parser = ArgumentParser()
         self._args = args
         self.arguments = None
+        self.resolver = Resolver(self)
         self.tab_directory = None
         self.url = ''
         self.exit_command = 'exit'
@@ -27,6 +30,21 @@ class Browser(object):
             self.url = input('> ')
             if self.url == self.exit_command:
                 self.quit()
+            else:
+                page_content = self.load_page(self.url)
+
+                print(page_content)
+
+            self.url = ''
+
+    def load_page(self, url: str) -> str:
+        """
+        Load the page found at the given URL.
+
+        :param url: URL to load
+        :return: Page content if the page exists, else error message
+        """
+        return self.resolver.load_page(url)
 
     def quit(self, error_code: int = 0):
         """
