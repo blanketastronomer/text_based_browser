@@ -111,3 +111,17 @@ def test_load_tab_from_file_by_providing_hostname_without_extnesion(monkeypatch,
     first_fixture = f"{first_fixture}\n\n\n> \n{first_fixture}"
 
     assert first_page == first_fixture
+
+
+def test_do_not_load_tab_from_file_if_not_saved_first(monkeypatch, capfd, browser_with_absolute_tab_directory):
+    pytest_add_input(monkeypatch, 'nytimes', 'exit')
+
+    with pytest.raises(SystemExit):
+        browser_with_absolute_tab_directory.start()
+
+    captured = capfd.readouterr()
+
+    page: str = captured.out
+    page = page.strip("> ").strip()
+
+    assert page == "Error 404 Page Not Found"
