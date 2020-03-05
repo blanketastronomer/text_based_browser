@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.fixtures.address_fixture import nytimes_com
 from tests.helpers.input_helper import pytest_add_input
 from text_based_browser.browser import Browser
 
@@ -90,3 +91,23 @@ def test_tab_saved_if_url_has_multiple_dots_in_hostname(monkeypatch, browser_wit
     file = TAB_DIRECTORY / 'en.wikipedia.browsertab'
 
     assert file.exists() is True
+
+
+def test_load_tab_from_file_by_providing_hostname_without_extnesion(monkeypatch, capfd, browser_with_absolute_tab_directory):
+    pytest_add_input(monkeypatch, 'nytimes.com', 'nytimes', 'exit')
+
+    with pytest.raises(SystemExit):
+        browser_with_absolute_tab_directory.start()
+
+    file = TAB_DIRECTORY / 'nytimes.browsertab'
+
+    captured = capfd.readouterr()
+
+    first_page: str = captured.out
+    first_page = first_page.strip('> ').strip(str(file)).strip().strip('> Error 404 Page Not Found')
+
+    first_fixture: str = nytimes_com
+    first_fixture = first_fixture.strip()
+    first_fixture = f"{first_fixture}\n\n\n> \n{first_fixture}"
+
+    assert first_page == first_fixture

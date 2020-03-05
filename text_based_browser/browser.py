@@ -61,7 +61,10 @@ class Browser(object):
         :param url: URL to load
         :return: Page content if the page exists, else error message
         """
-        return self.resolver.load_page(url)
+        if self.page_saved(url):
+            return self.resolver.load_page(url + ".com")
+        else:
+            return self.resolver.load_page(url)
 
     def save_page(self, url: str, page_content: str):
         """
@@ -78,6 +81,24 @@ class Browser(object):
                 f.write(page_content)
         except TypeError:
             pass
+
+    def page_saved(self, url: str) -> bool:
+        """
+        Check if a page corresponding to the given URL has been saved to disk.
+
+        :param url: URL to derive the filename from
+        :return: True if page was saved to disk, else False
+        """
+        try:
+            if url != self.exit_command:
+                file = self.get_tab_file_path(url)
+
+                if Path(file).exists():
+                    return True
+                else:
+                    return False
+        except TypeError:
+            return False
 
     def quit(self, error_code: int = 0):
         """
