@@ -8,24 +8,21 @@ class Browser(object):
     def __init__(self, args: List[str] = []):
         """
         A new Browser object.
+        :param args: Arguments passed via the commandline
         """
         from text_based_browser.resolver import Resolver
 
-        self.argument_parser = ArgumentParser()
         self._args = args
-        self.arguments = None
-        self.resolver = Resolver(self)
-        self.tab_directory = None
-        self.url = ''
+        self.argument_parser = ArgumentParser()
         self.exit_command = 'exit'
+        self.resolver = Resolver(self)
+        self.url = None
 
         self.process_arguments()
 
     def process_arguments(self):
         """
         Process arguments passed to the class instance.
-
-        :return: None
         """
         self.arguments = self.argument_parser.parse_args(self._args)
         self.tab_directory = self.arguments.tab_directory
@@ -35,24 +32,24 @@ class Browser(object):
         Start the browser.
 
         This should run an infinite loop until the browser is quit.
-        :return:
         """
 
-        if self.tab_directory is not None:
-            Path(self.tab_directory).mkdir(exist_ok=True, parents=True)
+        try:
+            if self.tab_directory is not None:
+                Path(self.tab_directory).mkdir(exist_ok=True, parents=True)
 
-        while True:
-            self.url = input('> ')
-            if self.url == self.exit_command:
-                self.quit()
-            else:
-                page_content = self.load_page(self.url)
+            while True:
+                self.url = input('> ')
+                if self.url == self.exit_command:
+                    self.quit()
+                else:
+                    page_content = self.load_page(self.url)
 
-                print(page_content)
+                    print(page_content)
 
-                self.save_page(self.url, page_content)
-
-            self.url = ''
+                    self.save_page(self.url, page_content)
+        except SystemExit:
+            pass
 
     def load_page(self, url: str) -> str:
         """
@@ -62,7 +59,7 @@ class Browser(object):
         :return: Page content if the page exists, else error message
         """
         if self.page_saved(url):
-            return self.resolver.load_page(url + ".com")
+            return self.load_page_from_file(url)
         else:
             return self.resolver.load_page(url)
 
@@ -72,7 +69,6 @@ class Browser(object):
 
         :param url: Page URL
         :param page_content: Page content
-        :return: None
         """
         save_file = self.get_tab_file_path(self.url)
 
@@ -93,10 +89,7 @@ class Browser(object):
             if url != self.exit_command:
                 file = self.get_tab_file_path(url)
 
-                if Path(file).exists():
-                    return True
-                else:
-                    return False
+                return Path(file).exists()
         except TypeError:
             return False
 
@@ -104,7 +97,7 @@ class Browser(object):
         """
         Quit the browser with the given error code.
 
-        :param error_code: Error code to use.  Defaults to 0 (No error)
+        :param error_code: Error code to use.  Defaults to 0 (NO ERROR)
         :return: Error code
         """
         exit(error_code)
@@ -119,7 +112,6 @@ class Browser(object):
         :return: Path as a string if it exists, else None
         """
         parts = url.split('.')
-        extension = 'browsertab'
 
         try:
             # self.tab_directory exists
@@ -130,8 +122,6 @@ class Browser(object):
                 # Single part, such as "reddit.com"
                 split = parts
 
-            split.append(extension)
-
             filename = '.'.join(split)
 
             save_file = Path(self.tab_directory) / filename
@@ -139,3 +129,21 @@ class Browser(object):
             return save_file
         except TypeError:
             pass
+
+    def load_page_from_file(self, url: str) -> str:
+        """
+        Load the page corresponding to the given URL from disk.
+
+        :param url: Page URL
+        :return: Page content
+        """
+        file_to_load = self.get_tab_file_path(url)
+        page_content: str = None
+
+        try:
+            with open(file_to_load, 'r') as f:
+                page_content = f.read()
+        except TypeError:
+            pass
+
+        return page_content
