@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List, Union
 
 from text_based_browser.argument_parser import ArgumentParser
+from text_based_browser.history import History
 
 
 class Browser(object):
@@ -15,6 +16,7 @@ class Browser(object):
         self._args = args
         self.argument_parser = ArgumentParser()
         self.exit_command = 'exit'
+        self.history = History()
         self.resolver = Resolver(self)
         self.url = None
 
