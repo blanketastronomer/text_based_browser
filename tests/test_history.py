@@ -26,3 +26,14 @@ def test_browser_history_stack_is_empty_on_boot(monkeypatch, browser):
     browser.start()
 
     assert browser.history.empty() is True
+
+
+def test_browser_history_stack_adds_pages(monkeypatch, browser):
+    pytest_add_input(monkeypatch, 'nytimes.com', 'bloomberg.com', 'exit')
+
+    browser.start()
+
+    assert browser.history.empty() is False
+    assert len(browser.history) == 2
+    assert browser.history.peek() == 'bloomberg.com'
+    assert browser.history.pop() == 'bloomberg.com'

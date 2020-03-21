@@ -46,6 +46,7 @@ class Browser(object):
                     self.quit()
                 else:
                     page_content = self.load_page(self.url)
+                    self.history.push(self.url)
 
                     print(page_content)
 
