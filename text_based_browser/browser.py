@@ -15,6 +15,7 @@ class Browser(object):
 
         self._args = args
         self.argument_parser = ArgumentParser()
+        self.back_command = 'back'
         self.exit_command = 'exit'
         self.history = History()
         self.resolver = Resolver(self)
@@ -45,12 +46,17 @@ class Browser(object):
                 if self.url == self.exit_command:
                     self.quit()
                 else:
-                    page_content = self.load_page(self.url)
-                    self.history.push(self.url)
+                    if self.url == self.back_command:
+                        page_url = self.history.pop()
+                        page_content = self.load_page(page_url)
+                    else:
+                        page_url = self.url
+                        page_content = self.load_page(page_url)
+                        self.history.push(self.url)
 
                     print(page_content)
 
-                    self.save_page(self.url, page_content)
+                    self.save_page(page_url, page_content)
         except SystemExit:
             pass
 
@@ -73,7 +79,7 @@ class Browser(object):
         :param url: Page URL
         :param page_content: Page content
         """
-        save_file = self.get_tab_file_path(self.url)
+        save_file = self.get_tab_file_path(url)
 
         try:
             with open(save_file, 'w') as f:
